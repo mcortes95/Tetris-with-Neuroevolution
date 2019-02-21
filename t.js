@@ -6,7 +6,7 @@ function setup(){
     createCanvas(400,600);
     slider=createSlider(1,100,1);
     c=color(192,192,192);
-    tets[0]=new Tetronimo(0);
+    alive[0]=new Tetronimo(random([0,1,2,3,4,5,6]));
     //tets[1]=new Tetronimo(0);
     //tets[2]=new Tetronimo(2);
 }
@@ -24,8 +24,15 @@ function draw(){
     for(let i=100;i<=300;i+=25){
         line(i,0,i,500);
     }
-    for(let p of tets){
+    for(let p of alive){
+        //if(counter%60===0){
+        //    console.log(p);
+        //}
         p.show();
+    }
+    for(let d of dead){
+        //console.log(d);
+        d.show();
     }
 
 
@@ -38,8 +45,15 @@ function draw(){
 
 
     if(counter%60===0){
-        for(let piece of tets){
-            piece.fall();
+        //if(alive[0].blocks[2][1]<19){
+        console.log(random([0,1,2,3,4,5,6]));
+        if(checkBelow()){
+            alive[0].fall();
+            //console.log(alive[0].blocks[2][1]);
+        }
+        else{
+            dead.push(alive.splice(0,1)[0]);
+            alive.push(new Tetronimo(random([0,1,2,3,4,5,6])));
         }
     }
     counter++;
@@ -50,9 +64,51 @@ function keyPressed(){
         console.log('rotate');
     }
     if(key=='a'){
-        tets[0].moveLeft();
+        if(checkLeft()){
+            alive[0].moveLeft();
+        }
     }
     if(key=='d'){
-        tets[0].moveRight();
+        if(checkRight()){
+            alive[0].moveRight();
+        }
     }
+    if(key==='s'){
+        if(checkBelow()){
+            alive[0].fall();
+        }
+    }
+}
+
+function checkLeft(){
+    //TODO: make sure this checks blocks to the left
+    return true;
+}
+
+function checkRight(){
+    //TODO: make sure this checks blocks to the right
+    return true;
+}
+function checkBelow(){
+    //console.log(alive[0].blocks); 
+    for(let b of alive[0].blocks){
+        //console.log(b);
+        if(b[1]>=19){
+            console.log('reached floor');
+            return false;
+        }
+    }
+    for(let block of dead){
+        for(let piece of block.blocks){
+            for(let aliveBlock of alive[0].blocks){
+                if(aliveBlock[1]+1===piece[1] && aliveBlock[0]===piece[0]){
+                    console.log('hit block');
+                    console.log(alive[0].blocks[0][1],piece[1]);
+                    return false;
+
+                }
+            }
+        }
+    }
+    return true;
 }
