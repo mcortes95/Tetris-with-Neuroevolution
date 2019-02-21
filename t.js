@@ -6,7 +6,8 @@ function setup(){
     createCanvas(400,600);
     slider=createSlider(1,100,1);
     c=color(192,192,192);
-    alive[0]=new Tetronimo(random([0,1,2,3,4,5,6]));
+    //alive[0]=new Tetronimo(random([0,1,2,3,4,5,6]));
+    alive[0]=new Tetronimo(6);
     //tets[1]=new Tetronimo(0);
     //tets[2]=new Tetronimo(2);
 }
@@ -31,25 +32,14 @@ function draw(){
         p.show();
     }
     for(let d of dead){
-        //console.log(d);
+        console.log(d);
         d.show();
     }
 
 
-
-
-
-
-
-
-
-
     if(counter%60===0){
-        //if(alive[0].blocks[2][1]<19){
-        console.log(random([0,1,2,3,4,5,6]));
         if(checkBelow()){
             alive[0].fall();
-            //console.log(alive[0].blocks[2][1]);
         }
         else{
             dead.push(alive.splice(0,1)[0]);
@@ -78,15 +68,59 @@ function keyPressed(){
             alive[0].fall();
         }
     }
+    if(key==='q'){
+        alive[0].rotateLeft();
+    }
+    if(key==='e'){
+        alive[0].rotateRight();
+    }
 }
 
 function checkLeft(){
     //TODO: make sure this checks blocks to the left
+    for(let b of alive[0].blocks){
+        //console.log(b);
+        if(b[0]===1){
+            console.log('hit left wall');
+            return false;
+        }
+    }
+    for(let block of dead){
+        for(let piece of block.blocks){
+            for(let aliveBlock of alive[0].blocks){
+                if(aliveBlock[0]-1===piece[0] && aliveBlock[1]===piece[1]){
+                    console.log('hit left block');
+                    //console.log(alive[0].blocks[0][1],piece[1]);
+                    return false;
+
+                }
+            }
+        }
+    }
     return true;
 }
 
 function checkRight(){
     //TODO: make sure this checks blocks to the right
+    for(let b of alive[0].blocks){
+        //console.log(b);
+        if(b[0]===10){
+            console.log('hit right wall.');
+            return false;
+        }
+    }
+    for(let block of dead){
+        for(let piece of block.blocks){
+            for(let aliveBlock of alive[0].blocks){
+                if(aliveBlock[0]+1===piece[0] && aliveBlock[1]===piece[1]){
+                    console.log('hit right block');
+                    //console.log(alive[0].blocks[0][1],piece[1]);
+                    return false;
+
+                }
+            }
+        }
+    }
     return true;
 }
 function checkBelow(){
