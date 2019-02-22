@@ -1,15 +1,17 @@
 let c;
 let alive=[];
 let dead=[];
+let matrix=[...Array(10)].map(e =>Array(20).fill(false));
 let counter=1;
 function setup(){
     createCanvas(400,600);
     slider=createSlider(1,100,1);
     c=color(192,192,192);
     //alive[0]=new Tetronimo(random([0,1,2,3,4,5,6]));
-    alive[0]=new Tetronimo(6);
+    alive[0]=new Tetronimo(1);
     //tets[1]=new Tetronimo(0);
-    //tets[2]=new Tetronimo(2);
+    console.log(matrix);
+    console.log(matrix[7][15]);
 }
 function draw(){
 
@@ -32,21 +34,37 @@ function draw(){
         p.show();
     }
     for(let d of dead){
-        console.log(d);
+        //console.log(d);
         d.show();
     }
 
 
-    if(counter%60===0){
+    if(counter===60){
         if(checkBelow()){
             alive[0].fall();
         }
         else{
-            dead.push(alive.splice(0,1)[0]);
+            //dead.push(alive.splice(0,1)[0]);
+            let temp=alive.splice(0,1)[0];
+            dead.push(temp);
+            //console.log(temp);
+            for(let mino of temp.blocks){
+                let x=mino[0];
+                let y=mino[1];
+                matrix[x][y]=true;
+                //matrix.push(mino);
+                console.log(mino);
+            }
+            //console.log(matrix);
+
+            //alive.push(new Tetronimo(1));
             alive.push(new Tetronimo(random([0,1,2,3,4,5,6])));
         }
+        counter=0;
     }
-    counter++;
+    else{
+        counter++;
+    }
 }
 
 function keyPressed(){
@@ -78,23 +96,20 @@ function keyPressed(){
 
 function checkLeft(){
     //TODO: make sure this checks blocks to the left
-    for(let b of alive[0].blocks){
+    for(let mino of alive[0].blocks){
         //console.log(b);
-        if(b[0]===1){
+        if(mino[0]===0){
             console.log('hit left wall');
             return false;
         }
     }
-    for(let block of dead){
-        for(let piece of block.blocks){
-            for(let aliveBlock of alive[0].blocks){
-                if(aliveBlock[0]-1===piece[0] && aliveBlock[1]===piece[1]){
-                    console.log('hit left block');
-                    //console.log(alive[0].blocks[0][1],piece[1]);
-                    return false;
-
-                }
-            }
+    let leftPos=alive[0].getLeft();
+    //console.log(matrix);
+    for(let minoPos of leftPos){
+        //console.log(minoPos[0]);
+        //console.log(matrix[minoPos[0]][minoPos[1]]);
+        if(matrix[minoPos[0]][minoPos[1]]===true){
+            return false;
         }
     }
     return true;
@@ -102,23 +117,21 @@ function checkLeft(){
 
 function checkRight(){
     //TODO: make sure this checks blocks to the right
-    for(let b of alive[0].blocks){
+    for(let mino of alive[0].blocks){
         //console.log(b);
-        if(b[0]===10){
+        if(mino[0]===9){
             console.log('hit right wall.');
             return false;
         }
     }
-    for(let block of dead){
-        for(let piece of block.blocks){
-            for(let aliveBlock of alive[0].blocks){
-                if(aliveBlock[0]+1===piece[0] && aliveBlock[1]===piece[1]){
-                    console.log('hit right block');
-                    //console.log(alive[0].blocks[0][1],piece[1]);
-                    return false;
-
-                }
-            }
+    
+    let rightPos=alive[0].getRight();
+    //console.log(matrix);
+    for(let minoPos of rightPos){
+        //console.log(minoPos[0]);
+        //console.log(matrix[minoPos[0]][minoPos[1]]);
+        if(matrix[minoPos[0]][minoPos[1]]===true){
+            return false;
         }
     }
     return true;
