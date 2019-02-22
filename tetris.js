@@ -3,12 +3,14 @@ let alive=[];
 let dead=[];
 let matrix=[...Array(10)].map(e =>Array(20).fill(false));
 let counter=1;
+let fall=true;
+let pause=false;
 function setup(){
     createCanvas(400,600);
     slider=createSlider(1,100,1);
     c=color(192,192,192);
     //alive[0]=new Tetronimo(random([0,1,2,3,4,5,6]));
-    alive[0]=new Tetronimo(1);
+    alive[0]=new Tetronimo(6);
     //tets[1]=new Tetronimo(0);
     console.log(matrix);
     console.log(matrix[7][15]);
@@ -38,8 +40,8 @@ function draw(){
         d.show();
     }
 
-
-    if(counter===60){
+    //console.log(counter);
+    if(counter===60 && fall){
         if(checkBelow()){
             alive[0].fall();
         }
@@ -60,6 +62,10 @@ function draw(){
             //alive.push(new Tetronimo(1));
             alive.push(new Tetronimo(random([0,1,2,3,4,5,6])));
         }
+        //counter=0;
+        //console.log(counter);
+    }
+    if(counter===60){
         counter=0;
     }
     else{
@@ -68,6 +74,25 @@ function draw(){
 }
 
 function keyPressed(){
+    if(key=='o'){
+        if(fall){
+            console.log('false');
+            fall=false;
+        }
+        else{
+            console.log('true');
+            fall=true;
+        }
+
+    }
+    if(key=='p' && !pause){
+        pause=true;
+        noLoop();
+    }
+    else if(key=='p' && pause){
+        pause=false;
+        loop();
+    }
     if(key==' '){
         console.log('rotate');
     }
@@ -86,11 +111,14 @@ function keyPressed(){
             alive[0].fall();
         }
     }
+
     if(key==='q'){
-        alive[0].rotateLeft();
+
+        alive[0].rotateLeft(matrix);
     }
+
     if(key==='e'){
-        alive[0].rotateRight();
+        alive[0].rotateRight(matrix);
     }
 }
 
@@ -136,6 +164,9 @@ function checkRight(){
     }
     return true;
 }
+
+//TODO  implement this using Matrix instead
+//      of checking every mino
 function checkBelow(){
     //console.log(alive[0].blocks); 
     for(let b of alive[0].blocks){
