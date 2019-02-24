@@ -200,7 +200,7 @@ class Tetronimo{
             test=2;
         }
         for(let tests of this.behavior[test]){
-            console.log(tests);
+            //console.log(tests);
         }
     }
 
@@ -230,16 +230,16 @@ class Tetronimo{
         }
         for(let offset of this.behavior[test]){
             let checkOffset=false;
-            console.log(offset);
+            //console.log(offset);
             let newOffsets=[];
             for(let sp of this.poss[this.getRightMap()]){
                 let point=[offset[0]+sp[0],offset[1]+sp[1]];
                 newOffsets.push(point);
             }
-            console.log(newOffsets);
+            //console.log(newOffsets);
             let validCount=0;
             for(let minoOffset of newOffsets){
-                console.log(minoOffset);
+                //console.log(minoOffset);
                 if(minoOffset[0]<10 && minoOffset[0]>=0){
                     //console.log(matrix[minoOffset[0]][minoOffset[1]]);
                     if(!matrix[minoOffset[0]][minoOffset[1]]){
@@ -247,9 +247,9 @@ class Tetronimo{
                     }
                 }
             }
-            console.log(validCount);
+            //console.log(validCount);
             if(validCount===4){
-                console.log('valid');
+                //console.log('valid');
                 this.p=this.getRightMap();
                 this.blocks=this.poss[this.p];
                 for(let pos of this.poss){

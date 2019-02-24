@@ -50,16 +50,17 @@ function draw(){
             let temp=alive.splice(0,1)[0];
             dead.push(temp);
             //console.log(temp);
+            let rowsToCheck=[]
             for(let mino of temp.blocks){
                 let x=mino[0];
                 let y=mino[1];
+                if(!rowsToCheck.includes(y)){
+                    rowsToCheck.push(y);
+                }
                 matrix[x][y]=true;
-                //matrix.push(mino);
-                console.log(mino);
             }
-            //console.log(matrix);
-
-            //alive.push(new Tetronimo(1));
+            checkRows(rowsToCheck);
+            console.log(rowsToCheck);
             alive.push(new Tetronimo(random([0,1,2,3,4,5,6])));
         }
         //counter=0;
@@ -76,11 +77,11 @@ function draw(){
 function keyPressed(){
     if(key=='o'){
         if(fall){
-            console.log('false');
+            //console.log('false');
             fall=false;
         }
         else{
-            console.log('true');
+            //console.log('true');
             fall=true;
         }
 
@@ -127,7 +128,7 @@ function checkLeft(){
     for(let mino of alive[0].blocks){
         //console.log(b);
         if(mino[0]===0){
-            console.log('hit left wall');
+            //console.log('hit left wall');
             return false;
         }
     }
@@ -148,7 +149,7 @@ function checkRight(){
     for(let mino of alive[0].blocks){
         //console.log(b);
         if(mino[0]===9){
-            console.log('hit right wall.');
+            //console.log('hit right wall.');
             return false;
         }
     }
@@ -172,7 +173,7 @@ function checkBelow(){
     for(let b of alive[0].blocks){
         //console.log(b);
         if(b[1]>=19){
-            console.log('reached floor');
+            //console.log('reached floor');
             return false;
         }
     }
@@ -180,8 +181,8 @@ function checkBelow(){
         for(let piece of block.blocks){
             for(let aliveBlock of alive[0].blocks){
                 if(aliveBlock[1]+1===piece[1] && aliveBlock[0]===piece[0]){
-                    console.log('hit block');
-                    console.log(alive[0].blocks[0][1],piece[1]);
+                    //console.log('hit block');
+                    //console.log(alive[0].blocks[0][1],piece[1]);
                     return false;
 
                 }
@@ -190,3 +191,61 @@ function checkBelow(){
     }
     return true;
 }
+
+
+function checkRows(checkingRows){
+
+    //console.log(checkingRows);
+    let rowsToDelete=[]
+    for(let row of checkingRows){
+        let deleteRow=0
+        for(let i=0;i<10;i++){
+            if(matrix[i][row]){
+                deleteRow++;
+            }
+        }
+        if(deleteRow===10){
+            rowsToDelete.push(row)
+        //console.log(deleteRow);
+        }
+    } 
+    if(rowsToDelete.length>0){
+        deleteRows(rowsToDelete);    
+    }
+}
+
+function deleteRows(rowsToDelete){
+    //console.log(rowsToDelete);
+    console.log(matrix[0]);
+    for(let row of rowsToDelete){
+        for(let col=matrix.length-1;col>=0;col--){
+            console.log(row,col);
+            matrix[col][row]=false;
+        }
+    }
+    console.log(matrix);
+    for(let mino of dead){
+        //console.log(mino);
+        let blockToRemove=[];
+        for(let block=0; block<mino.blocks.length;block++){
+            console.log(mino.blocks[block]);
+            for(let row of rowsToDelete){
+                if(mino.blocks[block][1]===row){
+                    blockToRemove.push(block);
+                console.log(mino.blocks[block][1]);
+                }
+            }
+        }
+        for(let block of blockToRemove){
+            dead.splice(block,1);
+        }
+    }
+}
+
+
+
+
+
+
+
+
