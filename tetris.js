@@ -9,8 +9,7 @@ function setup(){
     createCanvas(400,600);
     slider=createSlider(1,100,1);
     c=color(192,192,192);
-    //alive[0]=new Tetronimo(random([0,1,2,3,4,5,6]));
-    alive[0]=new Tetronimo(6);
+    alive[0]=new Tetronimo(9);
     //tets[1]=new Tetronimo(0);
     console.log(matrix);
     console.log(matrix[7][15]);
