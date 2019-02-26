@@ -28,10 +28,20 @@ class Tetronimo{
         this.blocks=[];
         this.type=type; 
         this.p=0; 
+
         if(type===9){
             this.color=color(69,69,69);
-            this.poss=[[[1,0]]];
-            this.blocks=this.poss[0];
+            this.poss=[
+                [[4,1],[4,0],[3,1],[5,1]],
+                [[4,1],[5,1],[4,0],[4,2]],
+                [[4,1],[4,2],[5,1],[3,1]],
+                [[4,1],[3,1],[4,2],[4,0]]
+            ];
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
+            this.behavior=wallKick_0;
         }
 
         //T
@@ -43,7 +53,11 @@ class Tetronimo{
                 [[4,1],[4,2],[5,1],[3,1]],
                 [[4,1],[3,1],[4,2],[4,0]]
             ];
-            this.blocks=this.poss[this.p]; 
+            //this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
             this.behavior=wallKick_0;
         }
         //|
@@ -55,7 +69,11 @@ class Tetronimo{
                 [[3,1],[4,1],[5,1],[6,1]],
                 [[4,-1],[4,0],[4,1],[4,2]]
             ];
-            this.blocks=this.poss[this.p]; 
+            //this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
             this.behavior=wallKick_1;
         }
         //O
@@ -67,7 +85,10 @@ class Tetronimo{
                 [[4,0],[5,0],[4,1],[5,1]],
                 [[4,0],[5,0],[4,1],[5,1]]
             ];
-            this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
         }
         //J
         if(type===3){
@@ -78,7 +99,11 @@ class Tetronimo{
                 [[4,1],[5,2],[5,1],[3,1]],
                 [[4,1],[3,2],[4,2],[4,0]]
             ];
-            this.blocks=this.poss[this.p]; 
+            //this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
             this.behavior=wallKick_0;
         }
         //L
@@ -90,7 +115,11 @@ class Tetronimo{
                 [[4,1],[3,2],[3,1],[5,1]],
                 [[4,1],[3,0],[4,0],[4,2]]
             ];
-            this.blocks=this.poss[this.p]; 
+            //this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
             this.behavior=wallKick_0;
         }
         //S
@@ -102,7 +131,11 @@ class Tetronimo{
                 [[4,2],[3,2],[5,1],[4,1]],
                 [[3,1],[3,0],[4,2],[4,1]]
             ];
-            this.blocks=this.poss[this.p];
+            //this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
             this.behavior=wallKick_0;
         }
         //Z
@@ -114,7 +147,11 @@ class Tetronimo{
                 [[4,1],[3,1],[4,2],[5,2]],
                 [[4,1],[4,0],[3,1],[3,2]]
             ];
-            this.blocks=this.poss[this.p]; 
+            //this.blocks=this.poss[this.p]; 
+            for(let ss of this.poss[0]){
+                //console.log(ss);
+                this.blocks.push(new mino(this.color,ss));
+            }
             this.behavior=wallKick_0;
 
         }
@@ -123,6 +160,19 @@ class Tetronimo{
 
 
     show(){
+        for(let mino of this.blocks){
+            mino.show()
+        }
+    }
+
+    showNext(){
+        for(let mino of this.blocks){
+            mino.showNext();
+        }
+    }
+
+    show0(){
+        
         fill(this.color);
         
         for(let block of this.blocks){
@@ -132,6 +182,7 @@ class Tetronimo{
         }
     }
     fall(){
+        //console.log(this.poss);
         for(let pos of this.poss){
             //block[0]++;
             for(let p  of pos){
@@ -140,14 +191,25 @@ class Tetronimo{
         }
     }
     moveLeft(){
+        /*
+        for(let mino of this.blocks){
+            mino.pos[0]--;
+        }
+        */
         for(let pos of this.poss){
             for(let p of pos){
                 p[0]--;
             }
         }
+        
     }
 
     moveRight(){
+        /*
+        for(let mino of this.blocks){
+            mino.pos[0]++;
+        }
+        */
         for(let pos of this.poss){
             for(let p of pos){
                 p[0]++;
@@ -155,37 +217,17 @@ class Tetronimo{
         }
     }
 
-/*
-    rotateLeft(){
-        console.log('TODO: rotate left');
-        if(this.p===0){
-            this.p=3;
-        }
-        else{
-            this.p--;
-        }
-        this.blocks=this.poss[this.p];
-    }
-*/
-
-/*
-    rotateRight(){
-        if(this.p===3){
-            this.p=0;
-        }
-        else{
-            this.p++;
-        }
-        this.blocks=this.poss[this.p];
-    }
-*/
     getLeftMap(){
         //TODO: Mirror the getRightMap() function for left rotation
-
-
+        if(this.p===0){
+            return 3;
+        }
+        else{
+            return this.p-1;
+        }
     }
     rotateLeft(matrix){
-        //TODO: Mirron the rotateRight() function for left rotation 
+        //TODO: Mirror the rotateRight() function for left rotation 
         let test;
         if(this.p===0){
             test=7;
@@ -194,13 +236,42 @@ class Tetronimo{
             test=1;
         }
         else if(this.p===2){
-            test=1;
+            test=3;
         }
         else if(this.p===3){
-            test=2;
+            test=5;
         }
-        for(let tests of this.behavior[test]){
+        for(let offset of this.behavior[test]){
             //console.log(tests);
+            let checkOffset=false;
+            let newOffsets=[];
+            for(let sp of this.poss[this.getLeftMap()]){
+                let point=[offset[0]+sp[0],offset[1]+sp[1]];
+                newOffsets.push(point);
+            }
+            let validCount=0;
+            for(let minoOffset of newOffsets){
+                if(minoOffset[0]<10 && minoOffset[0]>=0 && minoOffset[1]<20){
+                    if(!matrix[minoOffset[0]][minoOffset[1]]){
+                        validCount++;
+                    }
+                }
+            }
+            if(validCount===4){
+                this.p=this.getLeftMap();
+                let c=0;
+                for(let mino of this.blocks){
+                    mino.pos=this.poss[this.p][c];
+                    c++;
+                }
+                for(let pos of this.poss){
+                    for(let p of pos){
+                        p[0]+=offset[0];
+                        p[1]+=offset[1];
+                    }
+                }
+                return;
+            }
         }
     }
 
@@ -240,7 +311,7 @@ class Tetronimo{
             let validCount=0;
             for(let minoOffset of newOffsets){
                 //console.log(minoOffset);
-                if(minoOffset[0]<10 && minoOffset[0]>=0){
+                if(minoOffset[0]<10 && minoOffset[0]>=0 && minoOffset[1]<20){
                     //console.log(matrix[minoOffset[0]][minoOffset[1]]);
                     if(!matrix[minoOffset[0]][minoOffset[1]]){
                         validCount++;
@@ -251,7 +322,12 @@ class Tetronimo{
             if(validCount===4){
                 //console.log('valid');
                 this.p=this.getRightMap();
-                this.blocks=this.poss[this.p];
+                //this.blocks=this.poss[this.p];
+                let c=0;
+                for(let mino of this.blocks){
+                    mino.pos=this.poss[this.p][c];
+                    c++;
+                }
                 for(let pos of this.poss){
                     for(let p of pos){
                         p[0]+=offset[0];
@@ -268,8 +344,8 @@ class Tetronimo{
         let left=[];
         //console.log(this.blocks);
         for(let mino of this.blocks){
-            let x=mino[0]-1;
-            let y=mino[1];
+            let x=mino.pos[0]-1;
+            let y=mino.pos[1];
             //console.log(mino);
             left.push([x,y]);
         }
@@ -279,8 +355,8 @@ class Tetronimo{
         let right=[];
         //console.log(this.blocks);
         for(let mino of this.blocks){
-            let x=mino[0]+1;
-            let y=mino[1];
+            let x=mino.pos[0]+1;
+            let y=mino.pos[1];
             //console.log(mino);
             right.push([x,y]);
         }

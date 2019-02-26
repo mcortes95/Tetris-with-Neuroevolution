@@ -1,15 +1,37 @@
 let c;
 let alive=[];
+let next;
 let dead=[];
 let matrix=[...Array(10)].map(e =>Array(20).fill(false));
 let counter=1;
 let fall=true;
 let pause=false;
+let bag=[0,1,2,3,4,5,6];
+
+function randomBag(){
+    if(bag.length===0){
+        bag=[0,1,2,3,4,5,6];
+    }
+    let t=random(bag);
+    if(bag.length>0){
+        let rem=0
+        for(let x=0;x<bag.length;x++){
+            if(bag[x]===t){
+                rem=x;
+                x=10;
+            }
+        }
+        bag.splice(rem,1);
+    return t;
+    }
+}
+
 function setup(){
     createCanvas(400,600);
     slider=createSlider(1,100,1);
     c=color(192,192,192);
-    alive[0]=new Tetronimo(9);
+    alive[0]=new Tetronimo(randomBag());
+    next=new Tetronimo(randomBag());
     //tets[1]=new Tetronimo(0);
     console.log(matrix);
     console.log(matrix[7][15]);
@@ -22,6 +44,9 @@ function draw(){
     rect(325,0,75,600);
     rect(75,500,250,100);
     stroke(255,255,255);
+    fill(0,0,0);
+    textSize(24);
+    text('NEXT',90,570);
     for(let x=0;x<=500;x+=25){
         line(75,x,325,x);
     }
@@ -34,33 +59,50 @@ function draw(){
         //}
         p.show();
     }
+    next.showNext();
+    for(let d of matrix){
+        for(let x of d){
+            if(x){
+                x.show();
+            }
+        }
+    }
+    /*
     for(let d of dead){
         //console.log(d);
         d.show();
     }
-
+    */
+    
     //console.log(counter);
     if(counter===60 && fall){
         if(checkBelow()){
+            //console.log(alive);
             alive[0].fall();
         }
         else{
             //dead.push(alive.splice(0,1)[0]);
             let temp=alive.splice(0,1)[0];
-            dead.push(temp);
+            console.log(temp);
+            //for(let mino of temp.blocks){
+            //    dead.push(mino);
+            //}
             //console.log(temp);
             let rowsToCheck=[]
             for(let mino of temp.blocks){
-                let x=mino[0];
-                let y=mino[1];
+                dead.push(mino);
+                let x=mino.pos[0];
+                let y=mino.pos[1];
                 if(!rowsToCheck.includes(y)){
                     rowsToCheck.push(y);
                 }
-                matrix[x][y]=true;
+                matrix[x][y]=mino;
+                //console.log(matrix);
             }
             checkRows(rowsToCheck);
-            console.log(rowsToCheck);
-            alive.push(new Tetronimo(random([0,1,2,3,4,5,6])));
+            //console.log(rowsToCheck);
+            alive.push(next);
+            next=new Tetronimo(randomBag());
         }
         //counter=0;
         //console.log(counter);
@@ -126,17 +168,17 @@ function checkLeft(){
     //TODO: make sure this checks blocks to the left
     for(let mino of alive[0].blocks){
         //console.log(b);
-        if(mino[0]===0){
+        if(mino.pos[0]===0){
             //console.log('hit left wall');
             return false;
         }
     }
     let leftPos=alive[0].getLeft();
-    //console.log(matrix);
+    //console.log(leftPos);
     for(let minoPos of leftPos){
         //console.log(minoPos[0]);
         //console.log(matrix[minoPos[0]][minoPos[1]]);
-        if(matrix[minoPos[0]][minoPos[1]]===true){
+        if(matrix[minoPos[0]][minoPos[1]]!=false){
             return false;
         }
     }
@@ -147,7 +189,7 @@ function checkRight(){
     //TODO: make sure this checks blocks to the right
     for(let mino of alive[0].blocks){
         //console.log(b);
-        if(mino[0]===9){
+        if(mino.pos[0]===9){
             //console.log('hit right wall.');
             return false;
         }
@@ -158,7 +200,7 @@ function checkRight(){
     for(let minoPos of rightPos){
         //console.log(minoPos[0]);
         //console.log(matrix[minoPos[0]][minoPos[1]]);
-        if(matrix[minoPos[0]][minoPos[1]]===true){
+        if(matrix[minoPos[0]][minoPos[1]]!=false){
             return false;
         }
     }
@@ -168,24 +210,16 @@ function checkRight(){
 //TODO  implement this using Matrix instead
 //      of checking every mino
 function checkBelow(){
-    //console.log(alive[0].blocks); 
     for(let b of alive[0].blocks){
         //console.log(b);
-        if(b[1]>=19){
+        if(b.pos[1]>=19){
             //console.log('reached floor');
             return false;
         }
     }
-    for(let block of dead){
-        for(let piece of block.blocks){
-            for(let aliveBlock of alive[0].blocks){
-                if(aliveBlock[1]+1===piece[1] && aliveBlock[0]===piece[0]){
-                    //console.log('hit block');
-                    //console.log(alive[0].blocks[0][1],piece[1]);
-                    return false;
-
-                }
-            }
+    for(let block of alive[0].blocks){
+        if(matrix[block.pos[0]][block.pos[1]+1]!=false){
+            return false;
         }
     }
     return true;
@@ -214,29 +248,28 @@ function checkRows(checkingRows){
 }
 
 function deleteRows(rowsToDelete){
-    //console.log(rowsToDelete);
+    console.log(rowsToDelete);
     console.log(matrix[0]);
+    /*
     for(let row of rowsToDelete){
-        for(let col=matrix.length-1;col>=0;col--){
-            console.log(row,col);
-            matrix[col][row]=false;
+
+        for(let x=0;x<10;x++){
+            //console.log(matrix[x][row]);
+            matrix[x][row]=false;
+    
         }
     }
-    console.log(matrix);
-    for(let mino of dead){
-        //console.log(mino);
-        let blockToRemove=[];
-        for(let block=0; block<mino.blocks.length;block++){
-            console.log(mino.blocks[block]);
-            for(let row of rowsToDelete){
-                if(mino.blocks[block][1]===row){
-                    blockToRemove.push(block);
-                console.log(mino.blocks[block][1]);
+    */
+    for(row of rowsToDelete){
+        for(let y=row;y>0;y--){
+            for(let x=0;x<10;x++){
+                matrix[x][y]=matrix[x][y-1];
+                console.log(matrix[x][y]);
+                if(matrix[x][y]!=false){
+                    console.log(x,y);
+                    matrix[x][y].pos[1]++;
                 }
             }
-        }
-        for(let block of blockToRemove){
-            dead.splice(block,1);
         }
     }
 }
