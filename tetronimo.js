@@ -228,6 +228,9 @@ class Tetronimo{
     }
     rotateLeft(matrix){
         //TODO: Mirror the rotateRight() function for left rotation 
+        if(this.type===2){
+            return;
+        }
         let test;
         if(this.p===0){
             test=7;
@@ -286,6 +289,9 @@ class Tetronimo{
 
     rotateRight(matrix){
         //This returns the wall kick mapping
+        if(this.type===2){
+            return;
+        }
         let test;
         if(this.p===0){
             test=0;

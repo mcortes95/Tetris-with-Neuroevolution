@@ -13,6 +13,6 @@ class mino{
     }
     showNext(){
         fill(this.color);
-        rect(this.pos[0]*15+50,this.pos[1]*15+515,15,15);
+        rect(this.pos[0]*15-35,this.pos[1]*15+275,15,15);
     }
 }
