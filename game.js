@@ -4,19 +4,24 @@ class Game{
         this.alive=[];
         this.next;
         this.dead=[];
-        this.matrix=[...Array(10)].map(e =>Array(20).fill(false));
+        this.matrix=[...Array(10)].map(e =>Array(21).fill(false));
+        //console.log(this.matrix.length);
         this.score=0;
         this.counter=1;
         this.gravity=60;
-        this.fall=true;
         this.bag=[0,1,2,3,4,5,6];
         this.alive[0]=new Tetronimo(this.randomBag());
         this.next=new Tetronimo(this.randomBag());
+        this.gameOver=false;
+        this.spinCounter=0;
+        this.spinLock=false;
+        this.fitness;
+        this.duration=0;
         if(nn){
             this.nn=nn.copy();
         }
         else{
-            this.nn=new NeuralNetwork(11,10,5);
+            this.nn=new NeuralNetwork(4,5,5);
         }
     }
 
@@ -45,7 +50,8 @@ class Game{
             p.show();
         }
         this.next.showNext();
-        text(this.score,200,550);
+        fill(0,0,0);
+        text(this.score,200,530);
         for(let d of this.matrix){
             for(let x of d){
                 if(x){
@@ -58,12 +64,14 @@ class Game{
     }
 
     update(){
+        this.duration++;
         //console.log(this.counter);
-        if(this.counter===this.gravity && this.fall){
-            console.log("poop");
+        if(this.counter===this.gravity ){
             if(this.checkBelow()){
                 this.alive[0].fall();
+                
             }
+            
             else{
                 let temp=this.alive.splice(0,1)[0];
 
@@ -88,15 +96,16 @@ class Game{
         else{
             this.counter++;
         }
+        this.gameOver=this.checkGameOver();
     }
 
     think(){
         let inputNodes=[];
         inputNodes[0]=this.score;
         inputNodes[1]=this.next.type;
-        inputNodes[2]=this.alive[0].p;
-        console.log(this.alive[0].blocks[3]); 
-        inputNodes[3]=this.alive[0].blocks[0].pos[0];
+        inputNodes[2]=this.matrixToString();
+        inputNodes[3]=this.pieceToString();
+        /*
         inputNodes[4]=this.alive[0].blocks[0].pos[1];
         inputNodes[5]=this.alive[0].blocks[1].pos[0];
         inputNodes[6]=this.alive[0].blocks[1].pos[1];
@@ -104,10 +113,11 @@ class Game{
         inputNodes[8]=this.alive[0].blocks[2].pos[1];
         inputNodes[9]=this.alive[0].blocks[3].pos[0];
         inputNodes[10]=this.alive[0].blocks[3].pos[1];
-        
+        */
         let outputNodes=this.nn.predict(inputNodes);
-        console.log(outputNodes);
+        //console.log(outputNodes);
         let op=this.indOfMax(outputNodes);
+        this.pieceToString();
         if(op===0){
             this.rotate('q');
         }
@@ -124,6 +134,43 @@ class Game{
             this.moveLeft();
         }
     }
+    
+    checkGameOver(){
+        for(let x=0;x<10;x++){
+            if(this.matrix[x][1]){
+                return true;
+            }
+        }
+        return false;
+    }
+    pieceToString(){
+        let m='0';
+        for(let p of this.alive[0].blocks){
+            m+=p.pos[0];
+            m+=p.pos[1];
+        }
+        //console.log(m);
+        return m;
+    }
+    matrixToString(){
+        let sMatrix=[];
+        let l='0';
+        for(let col=0;col<10;col++){
+            //let l='0';
+            for(let row=1;row<21;row++){
+                //console.log(this.matrix[col][row]);
+                if(this.matrix[col][row]){
+                    l+='1';
+                }
+                else{
+                    l+='0';
+                }
+            }
+            //sMatrix.push(l);
+        }
+        //console.log(l);
+        return l;
+    }
 
     indOfMax(array){
         let max=array[0];
@@ -137,15 +184,18 @@ class Game{
         return maxIndex;
     } 
     rotate(direction){
-        if(direction==='e'){
-            this.alive[0].rotateRight(this.matrix);
-        }
-        else{
-            this.alive[0].rotateLeft(this.matrix);
+        //console.log(this.alive[0].spins);
+        if(this.alive[0].spins<50){
+            if(direction==='e'){
+                this.alive[0].rotateRight(this.matrix);
+            }
+            else{
+                this.alive[0].rotateLeft(this.matrix);
+            }
         }
     }
     moveLeft(){
-        if(this.checkLeft){
+        if(this.checkLeft()){
             this.alive[0].moveLeft();
         }
     }
@@ -164,13 +214,15 @@ class Game{
         return true;
     }
     moveRight(){
-        if(this.checkRight){
+        
+        if(this.checkRight()){
             this.alive[0].moveRight();
         }
     }
     checkRight(){
         for(let mino of this.alive[0].blocks){
             if(mino.pos[0]>=9){
+                //console.log(mino.pos[0]);
                 return false;
             }
         }
@@ -189,13 +241,15 @@ class Game{
         }
     }
     checkBelow(){
-        console.log(this.alive);
+        //console.log(this.alive);
         for(let mino of this.alive[0].blocks){
-            if(mino.pos[1]>=19){
+            if(mino.pos[1]>=20){
                 return false;
             }
         }
         for(let mino of this.alive[0].blocks){
+            //console.log(this.matrix);
+            //console.log(mino.pos);
             if(this.matrix[mino.pos[0]][mino.pos[1]+1]!=false){
                 return false;
             }
@@ -223,6 +277,7 @@ class Game{
     }
 
     deleteRows(rowsToDelete){
+        console.log(this.matrix);
         for(let row of rowsToDelete){
             for(let y=row;y>0;y--){
                 for(let x=0;x<10;x++){
@@ -266,6 +321,9 @@ class Game{
         else{
             this.score+=1200*(0+1);
         }
+    }
+    mutate(){
+        this.nn.mutate(0.1);
     }
 
 

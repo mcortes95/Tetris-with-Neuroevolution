@@ -9,7 +9,7 @@ class mino{
 
     show(){
         fill(this.color);
-        rect(this.pos[0]*25+75,this.pos[1]*25,25,25);
+        rect(this.pos[0]*25+75,this.pos[1]*25-25,25,25);
     }
     showNext(){
         fill(this.color);

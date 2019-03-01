@@ -28,7 +28,7 @@ class Tetronimo{
         this.blocks=[];
         this.type=type; 
         this.p=0; 
-
+        this.spins=0;
         if(type===9){
             this.color=color(69,69,69);
             this.poss=[
@@ -273,6 +273,7 @@ class Tetronimo{
                         p[1]+=offset[1];
                     }
                 }
+                this.spins++;
                 return;
             }
         }
@@ -326,9 +327,7 @@ class Tetronimo{
             }
             //console.log(validCount);
             if(validCount===4){
-                //console.log('valid');
                 this.p=this.getRightMap();
-                //this.blocks=this.poss[this.p];
                 let c=0;
                 for(let mino of this.blocks){
                     mino.pos=this.poss[this.p][c];
@@ -340,6 +339,7 @@ class Tetronimo{
                         p[1]+=offset[1];
                     }
                 }
+                this.spins++;
                 return;
             }
         }
